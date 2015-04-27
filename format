@@ -1,0 +1,82 @@
+#!/bin/bash
+#
+#   codingstyle.sh (or short us)
+#   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+#   A little script to automatically apply my preferred coding style
+#   to all .c, .cpp, .h, .java and .py files in and below the current directory
+#   Just copy it into a directory that is in your PATH and rename the file to cs.
+#
+#   Author: Christian Jann <christian 0x2e jann 0x40 ymail 0x2e com>
+#   URL: http://www.jann.cc/2013/02/20/code_formatting_using_shell_script.html
+#
+#   Requirements:
+#
+#     * astyle (http://astyle.sourceforge.net/astyle.html)
+#     * autopep8 (http://pypi.python.org/pypi/autopep8/)
+#       (only if it finds Python files)
+#
+
+case "$1" in
+    style)
+        echo "Formating source files..."
+        # Modified kdelibs coding style as defined in
+        #   http://techbase.kde.org/Policies/Kdelibs_Coding_Style
+
+        find -regex ".*\.\(c\|cpp\|h\|java\)" -exec \
+            astyle --indent=spaces=4 --brackets=break \
+              --indent-labels --pad-oper --unpad-paren --pad-header \
+              --keep-one-line-statements --convert-tabs \
+              --indent-preprocessor "{}" \;
+
+        # Other variants:
+          # Maybe use --mode=java for java files, --mode=c
+
+          # find . -perm -200 -regex ".*[.][CHch]p*" -exec astyle \
+          #    --suffix=none --style=ansi --convert-tabs "{}" \;
+
+          # find -regex ".*[.][CHch]p*" -exec astyle  --style=attach "{}" \;
+
+          # astyle --indent=spaces=4 --brackets=break \
+          #     --indent-labels --pad-oper --unpad-paren --pad-header \
+          #     --keep-one-line-statements --convert-tabs \
+          #     --indent-preprocessor \
+          #     `find -type f -name '*.c'` \
+          #     `find -type f -name '*.cpp'` \
+          #     `find -type f -name '*.h'` \
+          #     `find -type f -name '*.java'`
+
+        # Apply coding conventions for Python code
+        # http://www.python.org/dev/peps/pep-0008/
+        # https://pypi.python.org/pypi/autopep8/
+        # https://github.com/jcrocholl/pep8
+        # sudo pip-python install --upgrade autopep8
+        for file in $(find . -name "*.py")
+        do
+          #echo "Creating backup: $file.orig"
+          #cp -v $file{,.orig}
+          cp $file{,.orig}
+
+          #echo "Formating file: $file"
+          autopep8 -i "$file"
+
+          diff "$file" "$file.orig" >> /dev/null  \
+            && echo "Unchanged  $file" || echo "Formatted  $file"
+        done
+    ;;
+    clean)
+        echo "Deleting temporary files and backup copies..."
+        #find . \( -name "*.orig" -or -name "*~" \) -exec rm -v "{}" \;
+        #find -regex ".*\(orig\|~\|pyc\|bak\)" -delete
+        find -regex ".*\(orig\|~\|pyc\|bak\)" -exec rm -v "{}" \;
+        find -regex ".*\(.class\)" -exec rm -v "{}" \;
+        find -regex ".*\(.out\)" -exec rm -v "{}" \;
+    ;;
+    *)
+        echo "run ' style' to format all"\
+            ".c .cpp .h .java and .py files recursively"
+
+        echo "run ' clean' to delete temporary"\
+            "files and backup copies (*.orig)"
+    ;;
+esac

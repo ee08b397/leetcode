@@ -18,16 +18,16 @@ class StrStr(object):
       	
 
 if __name__ == "__main__":
-	s = StrStr()
-	haystack = "abcdef"
-	needle = "bc"
-	print "haystack = {}; needle = {}"\
-		.format(haystack, needle)
-	print s.strstr(haystack, needle)
-	
-	haystack = "abcdef"
-	needle = "cf"
-	print "haystack = {}; needle = {}"\
-		.format(haystack, needle)
-	print s.strstr(haystack, needle)
+    s = StrStr()
+    haystack = "abcdef"
+    needle = "bc"
+    print "haystack = {}; needle = {}"\
+            .format(haystack, needle)
+    print s.strstr(haystack, needle)
+    
+    haystack = "abcdef"
+    needle = "cf"
+    print "haystack = {}; needle = {}"\
+            .format(haystack, needle)
+    print s.strstr(haystack, needle)
 
